@@ -4,6 +4,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
 SAMPLE_DATA_DIR = DATA_DIR / "sample"
 RAW_DATA_DIR = DATA_DIR / "raw"
+EXTERNAL_DATA_DIR = DATA_DIR / "external"
+PUBLIC_BOUNDARY_DIR = EXTERNAL_DATA_DIR / "public"
+KANSAS_COUNTIES_GEOJSON = PUBLIC_BOUNDARY_DIR / "kansas_counties.geojson"
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
 FIGURE_DIR = OUTPUT_DIR / "figures"
 TABLE_DIR = OUTPUT_DIR / "tables"
@@ -31,5 +34,13 @@ CAMPUSES = {
 
 def ensure_project_dirs() -> None:
     """Create the public-facing directories used by the demo pipeline."""
-    for path in [SAMPLE_DATA_DIR, FIGURE_DIR, TABLE_DIR, REPORT_DIR, DOCS_DIR, NOTEBOOK_DIR]:
+    for path in [
+        SAMPLE_DATA_DIR,
+        PUBLIC_BOUNDARY_DIR,
+        FIGURE_DIR,
+        TABLE_DIR,
+        REPORT_DIR,
+        DOCS_DIR,
+        NOTEBOOK_DIR,
+    ]:
         path.mkdir(parents=True, exist_ok=True)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -13,6 +14,14 @@ from scripts.run_processing import run_processing
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Run the public DataFest demo pipeline.")
+    parser.add_argument(
+        "--with-maps",
+        action="store_true",
+        help="Also generate optional choropleth figures if geospatial dependencies are installed.",
+    )
+    args = parser.parse_args()
+
     print("1/3 Generating synthetic public demo data...")
     generate_synthetic_data()
 
@@ -21,6 +30,14 @@ def main() -> None:
 
     print("3/3 Generating public-facing figures and demo PDF...")
     generate_figures()
+
+    if args.with_maps:
+        from scripts.generate_choropleths import generate_choropleths
+
+        print("4/4 Generating optional choropleth maps...")
+        generate_choropleths()
+    else:
+        print("Optional choropleths are available via: python scripts/generate_choropleths.py")
 
     print("Demo pipeline complete.")
 

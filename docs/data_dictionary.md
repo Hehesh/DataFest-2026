@@ -40,3 +40,12 @@
 | current_patient_volume_norm | `demo_campus_scores.csv` | float | Min-max scaled current volume component |
 | hospital_involvement_norm | `demo_campus_scores.csv` | float | Min-max scaled hospital involvement component |
 | distance_to_campus_norm | `demo_campus_scores.csv` | float | Min-max scaled distance component for campus scoring |
+| county_fips | `demo_county_panel.csv` and `demo_campus_scores.csv` | string | Join key used for choropleth mapping; loaded as a five-digit FIPS code |
+| county_name | `demo_county_panel.csv` and `demo_campus_scores.csv` | string | Public county label used for tables and optional annotations |
+| diabetes_acute_care_rate | `demo_county_panel.csv` | float | Processed diabetes acute-care events per 100 diabetes patients |
+| uninsurance_rate_change | `demo_county_panel.csv` | float | Processed contextual uninsurance change used in the access-need score |
+| access_need_score | `demo_county_panel.csv` | float | Heuristic county access-need score used in bar charts and choropleths |
+| campus_opportunity_score | `demo_campus_scores.csv` | float | Heuristic county-campus opportunity score used in bar charts and choropleths |
+| geometry | `kansas_counties.geojson` | geometry | Public Kansas county boundary geometry used for optional choropleth maps |
+| county_fips | `kansas_counties.geojson` | string | Five-digit county FIPS key derived from the public boundary source |
+| county_name | `kansas_counties.geojson` | string | County label supplied by the public boundary source |

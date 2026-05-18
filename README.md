@@ -56,6 +56,32 @@ That workflow regenerates:
 - `outputs/figures/*.png`
 - `reports/final_presentation.pdf`
 
+## Generating Choropleth Maps
+
+Map generation is optional because it depends on geospatial packages and a public county boundary file.
+
+```bash
+pip install -r requirements.txt
+pip install -r requirements-geo.txt
+python scripts/generate_choropleths.py
+```
+
+Or run the core demo plus optional maps in one step:
+
+```bash
+python scripts/make_all.py --with-maps
+```
+
+Expected choropleth outputs include:
+
+- `outputs/figures/choropleth_access_need_score.png`
+- `outputs/figures/choropleth_diabetes_acute_care_rate.png`
+- `outputs/figures/choropleth_uninsurance_rate_change.png`
+- `outputs/figures/choropleth_topeka_opportunity_score.png`
+- `outputs/figures/choropleth_junction_city_opportunity_score.png`
+
+These maps are generated from synthetic/sample data in the public repo and joined to public Kansas county geometry by `county_fips`. Original competition choropleths should only be shared if DataFest rules explicitly allow it.
+
 ## Data Privacy
 
 The original DataFest data is not included in this repository. No restricted encounter-level or patient-level source files are required for the public demo, and the sample data in `data/sample/` is synthetic by design.

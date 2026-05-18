@@ -7,3 +7,11 @@
 - Distance Proxy: Distance to campus is only a rough proxy for access friction and does not capture transportation reliability, appointment availability, referral patterns, or patient preference.
 - Context, Not Causality: Uninsurance trends and utilization rates help describe context, but they do not establish causality.
 - Score Interpretation: Access-need and campus-opportunity scores are prioritization heuristics, not causal estimates, operational forecasts, or clinical recommendations.
+
+## Public Choropleth Limitations
+
+- Public demo choropleths use synthetic county-level data rather than the restricted competition dataset.
+- Map colors are not evidence of real county-level need unless they are regenerated from approved real outputs.
+- County-level choropleths can hide within-county variation and patient-level heterogeneity.
+- Distance-based access is a proxy and does not fully capture transportation, appointment availability, provider capacity, or patient constraints.
+- Choropleths can visually overemphasize large rural counties relative to population size.

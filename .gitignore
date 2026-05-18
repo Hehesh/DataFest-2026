@@ -16,7 +16,6 @@ venv/
 # Restricted or large data
 data/raw/
 data/processed/
-data/external/
 *.parquet
 *.feather
 *.pickle

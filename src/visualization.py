@@ -11,6 +11,8 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.cm import ScalarMappable
+from matplotlib.colors import Normalize
 import pandas as pd
 
 
@@ -33,6 +35,141 @@ def _apply_portfolio_style() -> None:
             "savefig.bbox": "tight",
         }
     )
+
+
+def _get_geopandas():
+    try:
+        import geopandas as gpd
+    except ImportError as exc:
+        raise ImportError(
+            "geopandas is required for choropleth maps. "
+            "Install with: pip install -r requirements-geo.txt"
+        ) from exc
+    return gpd
+
+
+def load_county_geometries(path: str | Path):
+    gpd = _get_geopandas()
+    geometry_path = Path(path)
+    if not geometry_path.exists():
+        raise FileNotFoundError(f"Missing county geometry file: {geometry_path}")
+    geo = gpd.read_file(geometry_path)
+    if "county_fips" not in geo.columns:
+        if "id" in geo.columns:
+            geo["county_fips"] = geo["id"].astype(str).str.zfill(5)
+        elif {"STATE", "COUNTY"}.issubset(geo.columns):
+            geo["county_fips"] = (
+                geo["STATE"].astype(str).str.zfill(2) + geo["COUNTY"].astype(str).str.zfill(3)
+            )
+        else:
+            raise KeyError("County geometry file must include county_fips or state/county code fields.")
+
+    if "county_name" not in geo.columns and "NAME" in geo.columns:
+        geo["county_name"] = geo["NAME"].astype(str).str.strip()
+
+    geo["county_fips"] = geo["county_fips"].astype(str).str.strip().str.zfill(5)
+    keep_cols = [column for column in ["county_fips", "county_name", "geometry"] if column in geo.columns]
+    geo = geo[keep_cols].copy()
+    return geo
+
+
+def prepare_county_choropleth_data(
+    county_panel: pd.DataFrame,
+    county_geo,
+    fips_col: str = "county_fips",
+):
+    plot_df = county_panel.copy()
+    plot_df[fips_col] = (
+        plot_df[fips_col].astype(str).str.strip().str.replace(r"\.0$", "", regex=True).str.zfill(5)
+    )
+    plot_df = plot_df.drop_duplicates(subset=[fips_col]).copy()
+    merged = county_geo.merge(
+        plot_df,
+        left_on="county_fips",
+        right_on=fips_col,
+        how="left",
+        suffixes=("_geo", ""),
+    )
+    if "county_name" not in merged.columns and "county_name_geo" in merged.columns:
+        merged["county_name"] = merged["county_name_geo"]
+    elif "county_name_geo" in merged.columns:
+        merged["county_name"] = merged["county_name"].fillna(merged["county_name_geo"])
+    return merged
+
+
+def plot_county_choropleth(
+    county_panel: pd.DataFrame,
+    county_geo,
+    value_col: str,
+    output_path: str | Path,
+    title: str,
+    cmap: str = "Blues",
+    label_col: str = "county_name",
+    annotate_counties: dict[str, dict[str, float | str]] | None = None,
+    fips_col: str = "county_fips",
+    vmin: float | None = None,
+    vmax: float | None = None,
+):
+    _apply_portfolio_style()
+    merged = prepare_county_choropleth_data(county_panel, county_geo, fips_col=fips_col)
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    if value_col not in merged.columns:
+        raise KeyError(f"Value column '{value_col}' not found in choropleth data.")
+
+    numeric_values = pd.to_numeric(merged[value_col], errors="coerce")
+    plot_vmin = float(numeric_values.min()) if vmin is None and numeric_values.notna().any() else vmin
+    plot_vmax = float(numeric_values.max()) if vmax is None and numeric_values.notna().any() else vmax
+
+    fig, ax = plt.subplots(figsize=(8.8, 6.2))
+    norm = Normalize(vmin=plot_vmin, vmax=plot_vmax)
+
+    merged.plot(
+        column=value_col,
+        ax=ax,
+        cmap=cmap,
+        linewidth=0.6,
+        edgecolor="#F2EEE8",
+        legend=False,
+        missing_kwds={"color": "#D9D7D2", "label": "Missing"},
+        vmin=plot_vmin,
+        vmax=plot_vmax,
+    )
+
+    merged.boundary.plot(ax=ax, linewidth=0.35, color="#FFFDF8")
+    ax.set_title(title, pad=12)
+    ax.set_axis_off()
+
+    sm = ScalarMappable(norm=norm, cmap=plt.get_cmap(cmap))
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, fraction=0.035, pad=0.02)
+    cbar.outline.set_linewidth(0.4)
+    cbar.set_label(value_col.replace("_", " ").title())
+
+    if annotate_counties:
+        points = merged.set_index("county_fips").geometry.representative_point()
+        for county_fips, config in annotate_counties.items():
+            if county_fips not in points.index:
+                continue
+            point = points.loc[county_fips]
+            label = str(config.get("name", county_fips))
+            dx = float(config.get("dx", 0.0))
+            dy = float(config.get("dy", 0.0))
+            ax.text(
+                point.x + dx,
+                point.y + dy,
+                label,
+                fontsize=8,
+                color="#2B2118",
+                ha="left",
+                va="center",
+                bbox={"facecolor": "#FFFDF8", "edgecolor": "none", "alpha": 0.85, "pad": 1.5},
+            )
+
+    fig.savefig(output, dpi=180)
+    plt.close(fig)
+    return ax
 
 
 def plot_diabetes_utilization_trends(df: pd.DataFrame, output_path: str | Path) -> None:
