@@ -28,3 +28,6 @@ outputs/tmp/
 DataFest-2026/
 EDA/
 sandbox/
+
+# Other .MD files
+REFACTOR.md
