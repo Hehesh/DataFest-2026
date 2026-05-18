@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+.python-version
+.mplconfig/
+
+# Restricted or large data
+data/raw/
+data/processed/
+data/external/
+*.parquet
+*.feather
+*.pickle
+*.pkl
+
+# Temporary outputs
+outputs/tmp/
+
+# Legacy local-only workspace artifacts kept outside the public-facing repo
+DataFest-2026/
+EDA/
+sandbox/
