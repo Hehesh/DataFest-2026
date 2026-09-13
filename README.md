@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository packages a privacy-safe, employer-facing version of an ASA DataFest 2026 healthcare analytics project for Stormont Vail Health  [(view presentation)](./reports/final_presentation.pdf). The original work explored how diabetes-related utilization, county access conditions, and campus geography could be combined into a practical planning story for outreach and service delivery.
+This repository packages a privacy-safe, employer-facing version of an ASA DataFest 2026 healthcare analytics project for Stormont Vail Health  [(view presentation)](./reports/final_presentation.pdf). The original work, with collaborators @YiqiSun1, @HillZhang2004, Jamie Smith, explored how diabetes-related utilization, county access conditions, and campus geography could be combined into a practical planning story for outreach and service delivery.
 
 The public repo keeps the analytical workflow intact while replacing restricted source data with lightweight synthetic files that let reviewers run the demo end to end.
 
